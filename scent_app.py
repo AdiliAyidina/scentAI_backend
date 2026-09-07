@@ -13,7 +13,6 @@ scent_app.py —— ScentAI 后端 (FastAPI)
 import re, numpy as np, pandas as pd
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
-from fastapi.staticfiles import StaticFiles
 from pydantic import BaseModel
 from typing import List, Optional
 
@@ -100,4 +99,6 @@ def recommend_split(r:Req):
     return rec.recommend_split(r.mbti,r.zodiac,r.scene,r.mood,purchased,
         gender_pref=r.gender,tiers=r.tiers,purchase_w=r.purchase_w,topn=r.topn)
 
-app.mount("/",StaticFiles(directory="static",html=True),name="static")
+@app.get("/")
+def health():
+    return {"status":"ScentAI API is running","products":int(len(rec.prod))}
