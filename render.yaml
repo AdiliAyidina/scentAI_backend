@@ -1,0 +1,7 @@
+services:
+  - type: web
+    name: scentai-api
+    runtime: python
+    plan: free
+    buildCommand: pip install -r requirements.txt
+    startCommand: uvicorn scent_app:app --host 0.0.0.0 --port $PORT
