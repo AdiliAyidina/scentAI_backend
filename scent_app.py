@@ -95,7 +95,12 @@ class ScentRecommender:
         sem=pd.read_excel(f"{d}/accord_semantic_map_clean.xlsx")
         scn=pd.read_excel(f"{d}/accord_scene_map_clean.xlsx")
         mood=pd.read_excel(f"{d}/accord_mood_map_clean.xlsx")
-        self.prod=pd.read_excel(f"{d}/perfumes_tagged.xlsx").reset_index(drop=True)
+        self.prod = pd.read_excel(f"{d}/perfumes_tagged.xlsx").reset_index(drop=True)
+        # ── 根治: 加载后立即清洗, 杜绝 NaN 流入 catalog / pkey / 矩阵 ──
+        self.prod["Brand"] = self.prod["Brand"].fillna("Unknown").astype(str).str.strip()
+        self.prod["Name"]  = self.prod["Name"].fillna("").astype(str).str.strip()
+        self.prod = self.prod[self.prod["Name"] != ""].reset_index(drop=True)  # 丢掉没名字的行
+        self.prod["rating"] = pd.to_numeric(self.prod["rating"], errors="coerce").fillna(0.0)
         self.A=sem["accord"].str.strip().tolist(); idx={a:i for i,a in enumerate(self.A)}
         self.S=sem[BIG5].values; self.C=sem["confidence"].values
         self.scn=scn.set_index(scn["accord"].str.strip()).loc[self.A,["work","home","travel","date","dining"]]
